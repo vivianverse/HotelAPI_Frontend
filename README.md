@@ -74,7 +74,7 @@ project/
 ├── src/
 │   ├── components/        # Reusable UI components
 │   ├── pages/             # Page views
-│   ├── services/          # API handlers
+│   ├── api/          # API handlers
 │   ├── hooks/             # Custom logic
 │   ├── assets/            # Images, icons
 │   ├── App.jsx
@@ -120,39 +120,187 @@ export const API_BASE_URL = "https://hotel-api-ak2w.onrender.com";
 
 ---
 
-## 🧠 Example Service File (services/hotelService.js)  
+## 🧠 Example Service/pages File (pages/RoomsPage.jsx)  
 ```javascript
-export const getHotels = async () => {
-  const response = await fetch(`${API_BASE_URL}/hotels`);
-  return response.json();
-};
+import { useState, useEffect } from "react";
+import api from "../api/api";
+import RoomForm from "../components/RoomForm";
+import RoomList from "../components/RoomList";
+
+export default function RoomsPage() {
+  const [rooms, setRooms] = useState([]);
+  const [editData, setEditData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchRooms = async () => {
+    setLoading(true);
+    try {
+      const list = await api.get("/rooms");
+      
+      setRooms(Array.isArray(list) ? list : []);
+    } catch (err) {
+      console.error("Fetch rooms error:", err);
+      alert("Failed to load rooms. See console.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchRooms(); }, []);
+
+  const createRoom = async (data) => {
+    try {
+      const created = await api.post("/rooms", data);
+      setRooms((prev) => [created, ...prev]);
+    } catch (err) {
+      console.error("Create room error:", err);
+      alert("Failed to create room.");
+    }
+  };
+
+  const updateRoom = async (id, data) => {
+    try {
+      const updated = await api.put(`/rooms/${id}`, data);
+      setRooms((prev) => prev.map((r) => (r._id === id ? updated : r)));
+      setEditData(null); 
+    } catch (err) {
+      console.error("Update room error:", err);
+      alert("Failed to update room.");
+    }
+  };
+
+  const deleteRoom = async (id) => {
+    if (!confirm("Are you sure you want to delete this room? This action cannot be undone.")) return;
+    try {
+      await api.delete(`/rooms/${id}`);
+      setRooms((prev) => prev.filter((r) => r._id !== id));
+    } catch (err) {
+      console.error("Delete room error:", err);
+      alert("Failed to delete room.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto">
+       
+        
+        {/* Room Form Section */}
+        <div className={`bg-white p-6 shadow-xl rounded-lg mb-8 ${editData ? 'border-2 border-indigo-500' : ''}`}>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            {editData ? "📝 Edit Room" : "➕ Add New Room"}
+          </h2>
+          <RoomForm
+            initial={editData}
+            onSubmit={(data) => editData ? updateRoom(editData._id, data) : createRoom(data)}
+            onCancel={() => setEditData(null)}
+          />
+        </div>
+
+        {/* Loading/Status Indicator */}
+        {loading && (
+          <p className="text-center py-4 text-indigo-600 font-medium">
+            Loading room data...
+          </p>
+        )}
+        
+        {/* Room List Section */}
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 mt-8">
+          All Available Rooms
+        </h2>
+        
+        {!loading && rooms.length === 0 ? (
+          <div className="text-center py-12 bg-white shadow-lg rounded-lg border border-gray-200">
+            <p className="text-lg text-gray-500">
+              No rooms found. Start by adding a new room above!
+            </p>
+          </div>
+        ) : (
+          <RoomList 
+            rooms={rooms} 
+            onEdit={setEditData} 
+            onDelete={deleteRoom} 
+          />
+        )}
+      </div>
+    </div>
+  );
+}
 ```
 
 ---
 
-## 🖥️ Example Component (Hotel List)  
+## 🖥️ Example Component (RoomList.jsx)  
 ```javascript
-import { useEffect, useState } from "react";
-import { getHotels } from "../services/hotelService";
-
-function Hotels() {
-  const [hotels, setHotels] = useState([]);
-
-  useEffect(() => {
-    getHotels().then(data => setHotels(data));
-  }, []);
-
+export default function RoomList({ rooms, onEdit, onDelete }) {
   return (
-    <div>
-      <h1>Hotel List</h1>
-      {hotels.map(hotel => (
-        <div key={hotel._id}>{hotel.name}</div>
-      ))}
+    <div className="max-w-6xl mx-auto mt-8 bg-white shadow-2xl rounded-xl overflow-hidden border border-gray-100 mt-8">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Number
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Type
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Price
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-100">
+          {rooms.map((r) => (
+            <tr
+              key={r._id}
+              className="hover:bg-indigo-50 transition duration-300 ease-in-out"
+            >
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {r.number}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {r.type}
+              </td>
+              {/* Added currency formatting for better presentation */}
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+                ${r.price.toFixed(2)}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <button
+                  onClick={() => onEdit(r)}
+                  className="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out mr-4 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 rounded-md p-1"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDelete(r._id)}
+                  className="text-red-600 hover:text-red-800 transition duration-150 ease-in-out font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-md p-1"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
-
-export default Hotels;
 ```
 
 ---
