@@ -10,9 +10,19 @@ export default function App() {
   return (
     <BrowserRouter>
       <NavBar />
+
       {/* Main content area */}
       <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
-        
+        <Paper
+          elevation={4} 
+          sx={{
+            borderRadius: 2,
+            p: { xs: 3, sm: 5 },
+            backgroundColor: "#f4f6f8",
+            boxShadow: "0 6px 20px rgba(0,0,0,0.06)", 
+            minHeight: "75vh",
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -27,6 +37,7 @@ export default function App() {
               <Route path="/bookings" element={<BookingsPage />} />
             </Routes>
           </Box>
+        </Paper>
       </Container>
     </BrowserRouter>
   );
