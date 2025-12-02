@@ -1,11 +1,5 @@
 import { PencilSquareIcon, TrashIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline';
 
-/**
- * Renders a list of rooms in a responsive card-based grid view.
- * * @param {Array<Object>} rooms - The list of room objects to display.
- * @param {function} onEdit - Callback function to handle room editing.
- * @param {function} onDelete - Callback function to handle room deletion.
- */
 
 export default function RoomList({ rooms, onEdit, onDelete }) {
   return (

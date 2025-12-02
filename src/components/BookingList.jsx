@@ -1,90 +1,90 @@
-import React from 'react';
-import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Typography, Box, Chip,
-} from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Event as EventIcon } from '@mui/icons-material';
+import { PencilSquareIcon, TrashIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 
-/**
- * A list of bookings table.
- */
-const BookingList = React.memo(({ bookings, guests, rooms, onEdit, onDelete }) => {
-  const findGuestName = (id) => guests.find((g) => g.id === id)?.name || "Unknown Guest";
-  const findRoomNumber = (id) => rooms.find((r) => r.id === id)?.number || "Unknown Room";
-  const findRoomType = (id) => rooms.find((r) => r.id === id)?.type || "N/A";
+export default function BookingList({ bookings = [], guests = [], rooms = [], onEdit, onDelete }) {
 
-  if (!bookings || bookings.length === 0) {
-    return (
-      <Paper elevation={1} sx={{ p: 6, textAlign: 'center', backgroundColor: '#fff3e0', border: '1px dashed #ffcc80' }}>
-        <EventIcon sx={{ fontSize: 40, color: '#ff9800', mb: 2 }} />
-        <Typography variant="body1" color="text.secondary">
-          No bookings have been made yet.
-        </Typography>
-      </Paper>
-    );
-  }
+  const findGuestName = (guestRef) => {
+    if (!guestRef) return "Unknown Guest";
+
+    if (typeof guestRef === "object" && guestRef.name) return guestRef.name;
+
+    const guest = guests.find(g => g._id === guestRef || g.id === guestRef);
+    return guest?.name || "Unknown Guest";
+  };
+
+ const findRoomInfo = (roomRef) => {
+    if (!roomRef) return { number: "Unknown Room", type: "N/A" };
+
+    if (typeof roomRef === "object" && roomRef.number) {
+      return { number: roomRef.number, type: roomRef.type || "N/A" };
+    }
+
+    const room = rooms.find(r => r._id === roomRef || r.id === roomRef);
+    return {
+      number: room?.number || "Unknown Room",
+      type: room?.type || "N/A"
+    };
+  };
 
   return (
-    <TableContainer component={Paper} elevation={4} sx={{ borderRadius: 2, overflow: 'hidden' }}>
-      <Table sx={{ minWidth: 700 }} aria-label="booking management table">
-        <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
-          <TableRow>
-            <TableCell sx={{ fontWeight: 'bold' }}>Guest</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Room</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Check-in</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Check-out</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {bookings.map((b) => (
-            <TableRow
-              key={b._id}
-              sx={{
-                '&:last-child td, &:last-child th': { border: 0 },
-                '&:hover': { backgroundColor: '#fbe9e7' },
-              }}
-            >
-              <TableCell component="th" scope="row">
-                <Typography variant="subtitle1" fontWeight="medium">{findGuestName(b.guestId)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Chip 
-                    label={`#${findRoomNumber(b.roomId)}`} 
-                    color="primary" 
-                    size="small" 
-                    sx={{ fontWeight: 'bold' }} 
-                />
-              </TableCell>
-              <TableCell>{findRoomType(b.roomId)}</TableCell>
-              <TableCell>{b.checkIn}</TableCell>
-              <TableCell>{b.checkOut}</TableCell>
-              <TableCell align="center">
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                  <IconButton
-                    color="primary"
-                    onClick={() => onEdit(b)}
-                    aria-label={`edit booking for room ${findRoomNumber(b.roomId)}`}
-                    size="small"
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => onDelete(b._id)}
-                    aria-label={`delete booking ${b._id}`}
-                    size="small"
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-});
+    <div className="overflow-x-auto mt-8">
+      <table className="min-w-full divide-y divide-gray-200 border border-gray-100 rounded-lg shadow-sm bg-white">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Guest</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Room</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Check-In</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Check-Out</th>
+            <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
 
-export default BookingList;
+        <tbody className="divide-y divide-gray-100">
+          {bookings.map((b) => {
+            const guestName = findGuestName(b.guestId || b.guest);
+            const roomInfo = findRoomInfo(b.roomId || b.room);
+
+            return (
+              <tr key={b._id} className="hover:bg-gray-50 transition duration-150 ease-in-out">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {guestName}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {roomInfo.number} — <span className="text-indigo-600">{roomInfo.type}</span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {new Date(b.checkIn).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {new Date(b.checkOut).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                  <button
+                    onClick={() => onEdit(b)}
+                    className="text-indigo-600 hover:text-indigo-800 inline-flex items-center"
+                  >
+                    <PencilSquareIcon className="h-4 w-4 mr-1" /> Edit
+                  </button>
+                  <button
+                    onClick={() => onDelete(b._id)}
+                    className="text-red-600 hover:text-red-800 inline-flex items-center"
+                  >
+                    <TrashIcon className="h-4 w-4 mr-1" /> Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+
+          {/* Empty State */}
+          {bookings.length === 0 && (
+            <tr>
+              <td colSpan="5" className="text-center py-8 text-gray-500">
+                <CalendarDaysIcon className="h-6 w-6 inline-block mb-1 text-gray-400" /> No bookings found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}

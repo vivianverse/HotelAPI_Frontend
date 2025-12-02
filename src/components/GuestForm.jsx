@@ -4,7 +4,7 @@ import { TextField, Button, Box, Paper, Typography } from '@mui/material';
 import { Add, Edit } from '@mui/icons-material';
 
 /**
- * A component for creating or editing guest data using MUI and react-hook-form.
+ * Component for creating or editing guest data using MUI.
  */
 export default function GuestForm({ initial = null, onSubmit, onCancel }) {
   const {
