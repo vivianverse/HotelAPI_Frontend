@@ -31,7 +31,8 @@ It focuses on fetching, displaying, and managing **hotels, rooms, guests, and bo
 - https://hotel-qd7kitlh2-vivianverses-projects.vercel.app  
 
 **Frontend (Deploy URL):**  
-*(Add once deployed)*
+- https://hotel-api-frontend-two.vercel.app/
+- https://hotelapi-6fzu.onrender.com/
 
 ---
 
