@@ -20,6 +20,11 @@ It focuses on fetching, displaying, and managing **hotels, rooms, guests, and bo
 
 ---
 
+## API Endpoints Used:
+• Rooms: https://hotel-api-ak2w.onrender.com/api/rooms
+• Guests: https://hotel-api-ak2w.onrender.com/api/guests
+• Bookings: https://hotel-api-ak2w.onrender.com/api/bookings
+
 ## 🌐 BASE URL (Frontend & Backend)  
 **Backend APIs:**  
 - https://hotel-api-ak2w.onrender.com  
