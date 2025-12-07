@@ -10,7 +10,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <NavBar />
-      {/* Main content area */}
       <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
         
           <Box

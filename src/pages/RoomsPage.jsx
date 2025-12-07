@@ -28,7 +28,6 @@ export default function RoomsPage() {
     fetchRooms();
   }, []);
 
-  // Form Close Handler
   const handleFormClose = () => {
     setEditData(null);
     setShowForm(false);
@@ -37,7 +36,7 @@ export default function RoomsPage() {
   // Create/Update/Delete Room Handlers (Client-side)
   const createRoom = async (data) => {
 
-    // Client-side duplicate check validation: ensure room number isn't already present
+    // Client-side duplicate check validation
     const roomNumber = (data?.number ?? "").toString().trim();
     if (rooms.some((r) => String(r.number).trim() === roomNumber)) {
       alert("Room number already exists. Please use a different number.");

@@ -35,7 +35,6 @@ export default function BookingsPage() {
 
   useEffect(() => { fetchAll(); }, []);
 
-  // Form Close Handler
   const handleFormClose = () => {
     setEditData(null);
     setShowForm(false);

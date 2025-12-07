@@ -16,7 +16,7 @@ export default function BookingForm({ guests = [], rooms = [], initial = null, o
     },
   });
 
-  // ✅ When editData (initial) changes, reset the form properly
+  // When editData (initial) changes, reset the form properly
   useEffect(() => {
     if (initial) {
       reset({
@@ -40,10 +40,10 @@ export default function BookingForm({ guests = [], rooms = [], initial = null, o
 
   const submit = (data) => {
     if (isEditing) {
-      onSubmit(data); // will update
+      onSubmit(data); 
     } else {
-      onSubmit(data); // will create
-      reset(); // clear only on create
+      onSubmit(data);
+      reset();
     }
   };
 

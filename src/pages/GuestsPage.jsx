@@ -8,55 +8,53 @@ export default function GuestsPage() {
   const [guests, setGuests] = useState([]);
   const [editData, setEditData] = useState(null);
  
-
+  // Create/Read/Update/Delete Guest Handlers (Client-side) //
   const fetchGuests = async () => {
-  try {
-    const res = await api.get("/guests");
-    console.log("API response:", res); 
-    setGuests(Array.isArray(res) ? res : []);
-    console.log("Guests loaded:", res);
-  } catch (err) {
-    console.error("Fetch guests error:", err);
-    alert("Failed to load guests — check console for details.");
-  }
-};
+    try {
+      const res = await api.get("/guests");
+      console.log("API response:", res); 
+
+      setGuests(Array.isArray(res) ? res : []);
+      console.log("Guests loaded:", res);
+      
+    } catch (err) {
+      console.error("Fetch guests error:", err);
+      alert("Failed to load guests — check console for details.");
+    }
+  };
 
   useEffect(() => {
     fetchGuests();
   }, []);
 
-  // const createGuest = async (data) => {
-  //   try {
-  //     const res = await api.post("/guests", data);
-  //     setGuests((prev) => [res.data, ...prev]);
-      
-  //     alert("Guest created successfully.");
-  //   } catch (err) {
-  //     console.error("Create guest error:", err.response?.data || err);
-  //     alert("Failed to create guest: " + (err.response?.data?.error || err.message));
-  //   }
-  // };
-  
 
   const createGuest = async (data) => {
-  try {
-    const payload = {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-    };
-
-    const res = await api.post("/guests", payload);
-    const newGuest = res.data;
-    setGuests((prev) => [newGuest, ...prev]);
-
-  } catch (err) {
-    console.error("Create guest error:", err.response?.data || err);
-    alert(
-      "Failed to create guest: " + (err.response?.data?.error || err.message)
+    const emailExists = guests.some(
+      (g) => g?.email?.toLowerCase() === (data.email || "").toLowerCase()
     );
-  }
-};
+    if (emailExists) {
+      return alert("This email is already registered. Please use a different email.");
+    }
+
+    try {
+      const created = await api.post("/guests", data);
+      setGuests((p) => [created, ...p]);
+      alert("Guest created successfully.");
+    } catch (err) {
+      
+      const status = err?.response?.status;
+      const body = err?.response?.data;
+
+      // Handle duplicate email from server (recommended status 409)
+      if (status === 409 || (body && /email/i.test(body?.error || body?.message || ""))) {
+        return alert("A guest with that email already exists.");
+      }
+
+      console.error("Create guest error:", err.response?.data || err);
+      alert("Failed to create guest. Check console for details.");
+    }
+  };
+
 
 
   const updateGuest = async (id, data) => {
@@ -104,15 +102,6 @@ export default function GuestsPage() {
         onCancel={() => setEditData(null)}
       />
 
-      {/* {loading ? (
-        <p>Loading guests...</p>
-      ) : (
-        <GuestList
-          guests={guests}
-          onEdit={setEditData}
-          onDelete={deleteGuest}
-        />
-      )} */}
 
       <GuestList
           guests={guests}

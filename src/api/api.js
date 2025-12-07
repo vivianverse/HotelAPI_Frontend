@@ -5,7 +5,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || "https://hotel-api-ak2w.onrend
 const axiosInstance = axios.create({
   baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
-  timeout: 10000,
+  timeout: 0,
 });
 
 
