@@ -32,6 +32,7 @@ It focuses on fetching, displaying, and managing **hotels, rooms, guests, and bo
 
 **Frontend (Deploy URL):**  
 - https://hotel-api-frontend-two.vercel.app/
+- https://hotel-api-frontend-81wb.vercel.app/
 - https://hotelapi-6fzu.onrender.com/
 
 ---
