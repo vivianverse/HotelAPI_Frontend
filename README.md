@@ -36,6 +36,9 @@ It focuses on fetching, displaying, and managing **hotels, rooms, guests, and bo
 - https://hotelapi-6fzu.onrender.com/
 
 ---
+📸SCREENSHOT
+<img width="1920" height="1080" alt="Screenshot (219)" src="https://github.com/user-attachments/assets/5b1032d0-bce3-45d8-a9d4-ef2f26c4461a" />
+
 
 ## 📬 Sample API Inputs (POSTMAN)  
 
